@@ -1,0 +1,338 @@
+Program.Sub.ScreenSU.Start
+gui.Form_PP..create
+gui.Form_PP..caption("Positive Pay Selection")
+gui.Form_PP..size(4755,2220)
+gui.Form_PP..minx(0)
+gui.Form_PP..miny(0)
+gui.Form_PP..position(0,0)
+gui.Form_PP..event(unload,form1_unload)
+gui.Form_PP..alwaysontop(False)
+gui.Form_PP..fontname("Arial")
+gui.Form_PP..fontsize(8)
+gui.Form_PP..forecolor(0)
+gui.Form_PP..fontstyle(,,,,)
+gui.Form_PP..BackColor(-2147483633)
+gui.Form_PP..controlbox(True)
+gui.Form_PP..maxbutton(False)
+gui.Form_PP..minbutton(True)
+gui.Form_PP..mousepointer(0)
+gui.Form_PP..moveable(True)
+gui.Form_PP..sizeable(False)
+gui.Form_PP..ShowInTaskBar(True)
+gui.Form_PP..titlebar(True)
+gui.Form_PP.cmdOk.create(button)
+gui.Form_PP.cmdOk.caption("Ok")
+gui.Form_PP.cmdOk.visible(True)
+gui.Form_PP.cmdOk.size(1110,375)
+gui.Form_PP.cmdOk.zorder(0)
+gui.Form_PP.cmdOk.position(200,1090)
+gui.Form_PP.cmdOk.enabled(True)
+gui.Form_PP.cmdOk.fontname("Arial")
+gui.Form_PP.cmdOk.fontsize(8)
+gui.Form_PP.cmdOk.event(click,cmdok_click)
+gui.Form_PP.cmdOk.defaultvalue("")
+gui.Form_PP.cmdOk.controlgroup(0)
+gui.Form_PP.lblBegDate.create(label,"Beginning Date",True,1935,255,1,200,200,True,0,Arial,8,-2147483633,0)
+gui.Form_PP.lblBegDate.defaultvalue("")
+gui.Form_PP.lblBegDate.controlgroup(0)
+gui.Form_PP.lblEndDate.create(label,"Ending Date",True,1935,255,1,2400,190,True,0,Arial,8,-2147483633,0)
+gui.Form_PP.lblEndDate.defaultvalue("")
+gui.Form_PP.lblEndDate.controlgroup(0)
+gui.Form_PP.dtpBDate.create(datepicker)
+gui.Form_PP.dtpBDate.visible(True)
+gui.Form_PP.dtpBDate.size(1935,285)
+gui.Form_PP.dtpBDate.zorder(0)
+gui.Form_PP.dtpBDate.position(200,475)
+gui.Form_PP.dtpBDate.enabled(True)
+gui.Form_PP.dtpBDate.checkbox(False)
+gui.Form_PP.dtpBDate.defaultvalue("")
+gui.Form_PP.dtpBDate.controlgroup(0)
+gui.Form_PP.dtpEDate.create(datepicker)
+gui.Form_PP.dtpEDate.visible(True)
+gui.Form_PP.dtpEDate.size(1935,285)
+gui.Form_PP.dtpEDate.zorder(0)
+gui.Form_PP.dtpEDate.position(2400,460)
+gui.Form_PP.dtpEDate.enabled(True)
+gui.Form_PP.dtpEDate.checkbox(False)
+gui.Form_PP.dtpEDate.defaultvalue("")
+gui.Form_PP.dtpEDate.controlgroup(0)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.UDT.Export.Define("CK_NO",Float,CK_NO)
+Variable.UDT.Export.Define("AMOUNT",Float,AMOUNT)
+Variable.UDT.Export.Define("CK_DATE",Date,CK_DATE)
+Variable.UDT.Export.Define("PAYEE",String,PAYEE)
+Variable.UDT.Export.Define("CK_OR_VOID",String,CK_OR_VOID)
+Variable.uGlobal.uExport.Declare("Export")
+Variable.Global.sAcctNumber.Declare(String)
+Variable.Global.sBankNo.Declare(String)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'Coded by: SFF
+'Date: 8/21/2015
+'This is a positive pay for SunTrust  to write certain information from the CHECKS_LOG table to a .csv file
+
+'Global Variable for Acct Number for file
+V.Global.sAcctNumber.Set("8800622816")
+'Bank Number required for Record
+V.Global.sBankNo.Set("175")
+
+'Displays the date selection form
+Gui.Form_PP..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3882_PosPay_SunTrust.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+program.sub.form1_unload.start
+F.Intrinsic.Control.SetErrorHandler("form1_unload_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'closes the program
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("form1_unload_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3882_PosPay_SunTrust.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.form1_unload.end
+
+program.sub.cmdok_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdok_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'open connection to the database
+F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+V.uglobal.uexport.redim(-1,-1)
+Gui.Form_PP..Visible(false)
+
+'call the chklog and writerec subroutines
+F.Intrinsic.Control.CallSub(Chklog)
+F.Intrinsic.Control.callsub(Writerec)
+
+'closes the screen
+Gui.Form_PP..Visible(false)
+
+'closes the connection to the database and closes the form
+F.ODBC.Connection!con.Close
+F.Intrinsic.Control.CallSub(Form1_unload)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdok_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3882_PosPay_SunTrust.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdok_click.end
+
+Program.Sub.ChkLog.Start
+F.Intrinsic.Control.SetErrorHandler("ChkLog_Err")
+F.Intrinsic.Control.ClearErrors
+
+'declaration of variables
+V.Local.sError.Declare(String)
+V.Local.ssql.Declare(String)
+V.Local.dbdate.Declare(Date)
+V.Local.dedate.Declare(Date)
+V.Local.i.Declare(Long)
+
+'set the begging and ending dates
+V.Local.dbdate.Set(V.Screen.Form_PP!dtpBDate.Value)
+V.Local.dedate.Set(V.Screen.Form_PP!dtpEDate.Value)
+
+V.uGlobal.uExport.Redim(-1,-1)
+
+'get and set check date, payee, amount of check and check number, getting checks and voids, this pos pay file has lines for V's in the same batch.
+F.Intrinsic.String.Build("select CK_DATE, CK_NO, PAYEE, AMOUNT,CK_OR_VOID from V_CHECKS_LOG where CK_OR_VOID in ('C','V') and ck_no not like 'A%' and ltrim(rtrim(ck_no))  <> '' and CK_DATE between '{0}' and '{1}'",V.Local.dbdate.PervasiveDate,V.Local.dedate.PervasiveDate,V.Local.ssql)
+F.ODBC.Connection!con.OpenRecordsetRO("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.con!rst.EOF,<>,True)
+	F.Intrinsic.Variable.LoadUDTFromRecordset("con","rst","v.uGlobal.uExport",False)
+F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Debug.SetLA("Gathered checks from CHECKS_LOG")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ChkLog_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3882_PosPay_SunTrust.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.ChkLog.End
+
+Program.Sub.Writerec.Start
+F.Intrinsic.Control.SetErrorHandler("Writerec_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sfile.Declare(String)
+V.Local.i.Declare(Long)
+V.Local.slinedata.Declare(String)
+V.Local.sFileData.Declare(String)
+V.Local.sdate.Declare(String)
+V.Local.stime.Declare(String)
+V.Local.iItems.Declare(Float)
+V.Local.sItems.Declare(String)
+V.Local.iAmounts.Declare(Float)
+V.Local.sAmounts.Declare(String)
+V.Local.iRet.Declare(Float)
+V.Local.sRet.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sret2.Declare(String)
+
+'formats the ambient time and ambient date
+F.Intrinsic.String.Format(V.Ambient.Date,"MMDDYY",V.Local.sdate)
+F.Intrinsic.String.Format(V.Ambient.Time,"HHMMSS",V.Local.stime)
+
+'Builds function for how the file will be saved
+F.Intrinsic.String.Build("{0}\PosPay\SUNPP{1}{2}.txt",V.Caller.filesdir,V.Local.sdate,V.Local.stime,V.Local.sfile)
+
+'Check the ubound of CK_NO to see if greater than -1
+F.Intrinsic.Control.If(V.uGlobal.uExport!CK_NO.UBound,>,-1)
+	'Write Batch Header
+	F.Intrinsic.String.Build("*00{0}0000000000{1}{2}",V.Global.sAcctNumber,V.Global.sBankNo,V.Local.sdate,V.Local.slinedata)
+	'Write Rec to FileData
+	F.Intrinsic.String.Build("{0}{1}{2}",V.Local.sFileData,V.Local.slinedata,V.Ambient.NewLine,V.Local.sFileData)
+
+	'Write Detail Records	
+	F.Intrinsic.Control.For(V.Local.i,V.uGlobal.uExport.LBound,V.uGlobal.uExport.UBound,1)
+		
+		'If C then check
+		F.Intrinsic.Control.If(V.uGlobal.uExport(v.Local.i)!CK_OR_VOID,=,"C")
+			'Transaction and Acct	
+			F.Intrinsic.String.Build("*10{0}",V.Global.sAcctNumber,V.Local.slinedata)
+			'Check No
+			F.Intrinsic.String.LPad(V.uGlobal.uExport(v.Local.i)!CK_NO.String,"0",10,V.Local.sRet)
+			F.Intrinsic.String.Build("{0}{1}",V.Local.slinedata,V.Local.sRet,V.Local.slinedata)
+			'Chk Amt
+			V.Local.sRet.Set(V.uGlobal.uExport(v.Local.i)!AMOUNT.String)
+			F.Intrinsic.String.IsInString(V.Local.sRet,".",True,V.Local.bExists)
+			F.Intrinsic.Control.If(V.Local.bExists,=,True)
+				F.Intrinsic.String.Split(V.Local.sRet,".",V.Local.sRet)
+				F.Intrinsic.String.RPad(V.Local.sRet(1),"0",2,V.Local.sRet2)
+				F.Intrinsic.String.Build("{0}{1}",V.Local.sRet(0).Trim,V.Local.sret2,V.Local.sRet)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("{0}00",V.Local.sRet,V.Local.sRet)
+			F.Intrinsic.Control.EndIf
+			F.Intrinsic.String.LPad(V.Local.sRet,"0",11,V.Local.sRet)
+			F.Intrinsic.String.Build("{0}{1}",V.Local.slinedata,V.Local.sRet,V.Local.slinedata)
+			'Payee/ Addl Info
+			F.Intrinsic.String.RPad(V.uGlobal.uExport(v.Local.i)!PAYEE.Trim," ",15,V.Local.sRet)
+			F.Intrinsic.String.Build("{0}{1}",V.Local.slinedata,V.Local.sRet,V.Local.slinedata)
+			'Funding Source Constant value
+			F.Intrinsic.String.Build("{0}111111111",V.Local.slinedata,V.Local.slinedata)
+
+			'Keep running total of amounts if a C transaction
+			F.Intrinsic.Math.Add(V.Local.iAmounts,V.uGlobal.uExport(v.Local.i)!AMOUNT,V.Local.iAmounts)
+			
+		'elseV then Void record
+		F.Intrinsic.Control.Else
+			'Transaction and Acct	
+			F.Intrinsic.String.Build("*26{0}",V.Global.sAcctNumber,V.Local.slinedata)
+			'Check No
+			F.Intrinsic.String.LPad(V.uGlobal.uExport(v.Local.i)!CK_NO.String,"0",10,V.Local.sRet)
+			F.Intrinsic.String.Build("{0}{1}",V.Local.slinedata,V.Local.sRet,V.Local.slinedata)
+			'Ck Date
+			F.Intrinsic.String.Format(V.uGlobal.uExport(v.Local.i)!CK_DATE,"MMDDYY",V.Local.sRet)
+			F.Intrinsic.String.Build("{0}{1}",V.Local.slinedata,V.Local.sRet,V.Local.slinedata)
+		F.Intrinsic.Control.EndIf
+
+		'Write Line to FileData
+		F.Intrinsic.String.Build("{0}{1}{2}",V.Local.sFileData,V.Local.slinedata,V.Ambient.NewLine,V.Local.sFileData)
+
+	F.Intrinsic.Control.Next(V.Local.i)
+
+	'Total Items for Batch trailer + 2, padded to 9 characters, this is total number of transactions + Header Rec + Batch Trailer Rec as the items
+	F.Intrinsic.Math.Add(V.uGlobal.uExport.UBound,3,V.Local.iItems)
+	F.Intrinsic.String.LPad(V.Local.iItems.String,"0",9,V.Local.sItems)
+
+	'Total Amounts for all records
+	V.Local.sAmounts.Set(V.Local.iAmounts.String)
+	F.Intrinsic.String.IsInString(V.Local.sAmounts,".",True,V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists,=,True)
+		F.Intrinsic.String.Split(V.Local.sAmounts,".",V.Local.sAmounts)
+		F.Intrinsic.String.RPad(V.Local.sAmounts(1),"0",2,V.Local.sRet2)
+		F.Intrinsic.String.Build("{0}{1}",V.Local.sAmounts(0).Trim,V.Local.sret2,V.Local.sAmounts)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0}00",V.Local.sAmounts,V.Local.sAmounts)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.String.LPad(V.Local.sAmounts,"0",11,V.Local.sAmounts)
+
+	'Batch Trailer
+	F.Intrinsic.String.Build("*98{0}999999999801{1}{2}",V.Global.sAcctNumber,V.Local.sItems,V.Local.sAmounts,V.Local.slinedata)
+	'Write Rec to FileData
+	F.Intrinsic.String.Build("{0}{1}{2}",V.Local.sFileData,V.Local.slinedata,V.Ambient.NewLine,V.Local.sFileData)
+
+	'Add additional 1 to items, total number of lines in text file created including File Record Trailer
+	F.Intrinsic.Math.Add(V.Local.iItems,1,V.Local.iItems)
+	F.Intrinsic.String.LPad(V.Local.iItems.String,"0",9,V.Local.sItems)
+
+	'File Record Trailer
+	F.Intrinsic.String.Build("*99{0}999999999901{1}{2}",V.Global.sAcctNumber,V.Local.sItems,V.Local.sAmounts,V.Local.slinedata)
+	'Write Rec to FileData
+	F.Intrinsic.String.Build("{0}{1}{2}",V.Local.sFileData,V.Local.slinedata,V.Ambient.NewLine,V.Local.sFileData)
+
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("No data found for selected range.")
+	F.Intrinsic.Control.ExitSub
+F.intrinsic.control.endif
+
+'write the string to a file
+F.Intrinsic.File.String2File(V.Local.sfile,V.Local.sFileData)
+
+'Display Successful Message
+F.Intrinsic.string.Build("Positive Pay File Created:{0}{1}",V.Ambient.NewLine,V.Local.sfile,V.Local.sRet)
+F.Intrinsic.UI.MsgboxExt("Positive Pay File Created",V.Local.sRet)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Writerec_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3882_PosPay_SunTrust.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Writerec.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_PosPay_SunTrust$}$SUPERVSR$}$8/21/2015
+Program.Sub.Comments.End
+
